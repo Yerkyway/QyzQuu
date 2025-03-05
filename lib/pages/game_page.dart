@@ -1,17 +1,98 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../models/player.dart';
 
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
+  const GameScreen({super.key});
+
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  late Player boyPlayer;
+  late Player girlPlayer;
+  ui.Image? boyImage;
+  ui.Image? girlImage;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImages();
+  }
+
+  Future<void> _loadImages() async {
+    // Load boy image
+    final boyData = await rootBundle.load('assets/boy_rider.png');
+    final boyCodec = await ui.instantiateImageCodec(
+      boyData.buffer.asUint8List(),
+    );
+    boyImage = (await boyCodec.getNextFrame()).image;
+
+    // Load girl image
+    final girlData = await rootBundle.load('assets/girl_rider.png');
+    final girlCodec = await ui.instantiateImageCodec(
+      girlData.buffer.asUint8List(),
+    );
+    girlImage = (await girlCodec.getNextFrame()).image;
+
+    // Initialize players after images are loaded
+    final size = MediaQuery.of(context).size;
+    final roadWidth = size.width * 0.45;
+    final roadLeft = (size.width - roadWidth) / 2;
+
+    boyPlayer = Player(
+      type: 'boy',
+      x: roadLeft + roadWidth * 0.15,
+      y: size.height * 0.75,
+    );
+
+    girlPlayer = Player(
+      type: 'girl',
+      x: roadLeft + roadWidth * 0.70,
+      y: size.height * 0.75,
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Game Screen'),
-      ),
-      body: CustomPaint(
-        painter: GrassPainter(),
-        child: Container(),
-      ),
+      appBar: AppBar(title: const Text('Game Screen')),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Stack(
+              children: [
+                CustomPaint(
+                  painter: GrassPainter(),
+                  size: MediaQuery.of(context).size,
+                ),
+                if (boyImage != null && girlImage != null)
+                  CustomPaint(
+                    painter: PlayerPainter(
+                      player: boyPlayer,
+                      boyImage: boyImage!,
+                      girlImage: girlImage!,
+                    ),
+                    size: MediaQuery.of(context).size,
+                  ),
+                if (boyImage != null && girlImage != null)
+                  CustomPaint(
+                    painter: PlayerPainter(
+                      player: girlPlayer,
+                      boyImage: boyImage!,
+                      girlImage: girlImage!,
+                    ),
+                    size: MediaQuery.of(context).size,
+                  ),
+              ],
+            ),
     );
   }
 }
@@ -36,7 +117,7 @@ class GrassPainter extends CustomPainter {
   }
 
   void _drawRoad(Canvas canvas, Size size) {
-    final double roadWidth = size.width * 0.2; // Road now takes 30% of the width
+    final double roadWidth = size.width * 0.30;
     final double roadLeft = (size.width - roadWidth) / 2;
     final Paint roadPaint = Paint()..color = Colors.grey.shade800;
 
@@ -47,19 +128,25 @@ class GrassPainter extends CustomPainter {
   }
 
   void _drawStartFinishLines(Canvas canvas, Size size) {
-    final double roadWidth = size.width * 0.2;
+    final double roadWidth = size.width * 0.30;
     final double roadLeft = (size.width - roadWidth) / 2;
     final Paint linePaint = Paint()
       ..color = Colors.white
       ..strokeWidth = 4;
 
     // Draw start line at the bottom
-    canvas.drawLine(Offset(roadLeft, size.height * 0.9),
-        Offset(roadLeft + roadWidth, size.height * 0.9), linePaint);
+    canvas.drawLine(
+      Offset(roadLeft, size.height * 0.85),
+      Offset(roadLeft + roadWidth, size.height * 0.85),
+      linePaint,
+    );
 
     // Draw finish line at the top
-    canvas.drawLine(Offset(roadLeft, size.height * 0.1),
-        Offset(roadLeft + roadWidth, size.height * 0.1), linePaint);
+    canvas.drawLine(
+      Offset(roadLeft, size.height * 0.1),
+      Offset(roadLeft + roadWidth, size.height * 0.1),
+      linePaint,
+    );
   }
 
   void _drawFlower(Canvas canvas, Size size) {
@@ -68,7 +155,7 @@ class GrassPainter extends CustomPainter {
     final double flowerSize = 10 + random.nextDouble() * 10;
 
     // Avoid drawing flowers on the road
-    final double roadWidth = size.width * 0.3;
+    final double roadWidth = size.width * 0.45;
     final double roadLeft = (size.width - roadWidth) / 2;
     if (x > roadLeft && x < roadLeft + roadWidth) {
       return;

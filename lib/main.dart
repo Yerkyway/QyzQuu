@@ -3,10 +3,12 @@ import 'package:qyz_quu/pages/menu_page.dart';
 import 'package:qyz_quu/pages/game_page.dart'; // Import the correct GameScreen
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,8 +16,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
       routes: {
-        '/': (context) => MenuPage(),
-        '/game': (context) => GameScreen(), // Now using the correct one
+        '/': (context) => const MenuPage(),
+        '/game': (context) => const GameScreen(), // Now using the correct one
       },
     );
   }
