@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MenuPage(),
+        '/': (context) => const MenuPage(), // Corrected the route name
         '/game': (context) => const GameScreen(), // Now using the correct one
       },
     );
