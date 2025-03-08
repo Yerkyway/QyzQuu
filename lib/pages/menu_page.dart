@@ -8,13 +8,13 @@ class MenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.white,
+        color: Colors.lightBlue,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Game Menu',
+                'Qyz Quu',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -34,7 +34,7 @@ class MenuPage extends StatelessWidget {
                   ),
                   backgroundColor: Colors.green,
                 ),
-                child: const Text('Start Game'),
+                child: const Text('Ойынды бастау'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -49,7 +49,7 @@ class MenuPage extends StatelessWidget {
                   ),
                   backgroundColor: Colors.red,
                 ),
-                child: const Text('Exit'),
+                child: const Text('Шығу'),
               ),
             ],
           ),
