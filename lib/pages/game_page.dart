@@ -105,6 +105,7 @@ class GrassPainter extends CustomPainter {
     _drawGrass(canvas, size);
     _drawRoad(canvas, size);
     _drawStartFinishLines(canvas, size);
+    _drawStops(canvas, size);
 
     for (int i = 0; i < 50; i++) {
       _drawFlower(canvas, size);
@@ -136,17 +137,36 @@ class GrassPainter extends CustomPainter {
 
     // Draw start line at the bottom
     canvas.drawLine(
-      Offset(roadLeft, size.height * 0.85),
-      Offset(roadLeft + roadWidth, size.height * 0.85),
+      Offset(roadLeft, size.height * 0.95),
+      Offset(roadLeft + roadWidth, size.height * 0.95),
       linePaint,
     );
 
     // Draw finish line at the top
     canvas.drawLine(
-      Offset(roadLeft, size.height * 0.1),
-      Offset(roadLeft + roadWidth, size.height * 0.1),
+      Offset(roadLeft, size.height * 0.05),
+      Offset(roadLeft + roadWidth, size.height * 0.05),
       linePaint,
     );
+  }
+
+  void _drawStops(Canvas canvas, Size size) {
+    final double roadWidth = size.width * 0.30;
+    final double roadLeft = (size.width - roadWidth) / 2;
+    final Paint stopPaint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill;
+
+    // Define stop positions along the road
+    final List<double> stopPositions = [0.8, 0.6, 0.4, 0.2];
+
+    for (double position in stopPositions) {
+      canvas.drawCircle(
+        Offset(size.width / 2, size.height * position),
+        roadWidth / 5, // Increased circle radius
+        stopPaint,
+      );
+    }
   }
 
   void _drawFlower(Canvas canvas, Size size) {
