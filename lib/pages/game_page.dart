@@ -182,13 +182,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     // Initialize player positions at starting line
     boyPlayer = Player(
       type: 'boy',
-      x: roadLeft + roadWidth * 0.33,
+      x: roadLeft + roadWidth * 0.2,
       y: size.height - 200, // Just above finish line
     );
 
     girlPlayer = Player(
       type: 'girl',
-      x: roadLeft + roadWidth * 0.67,
+      x: roadLeft + roadWidth * 0.8,
       y: size.height - 200, // Just above finish line
     );
 
@@ -720,9 +720,7 @@ class RoadPainter extends CustomPainter {
     for (var i = 1; i <= 5; i++) {
       double yPos = i * stopSpacing;
       canvas.drawCircle(
-          Offset(roadLeft + roadWidth * 0.33, yPos), stopRadius, stopPaint);
-      canvas.drawCircle(
-          Offset(roadLeft + roadWidth * 0.67, yPos), stopRadius, stopPaint);
+          Offset(roadLeft + roadWidth * 0.5, yPos), stopRadius, stopPaint);
     }
   }
 
@@ -740,7 +738,7 @@ class PlayerPainter extends CustomPainter {
     required this.player,
     required this.boyImage,
     required this.girlImage,
-    this.scaleFactor = 0.7,
+    this.scaleFactor = 0.6,
   });
 
   @override
