@@ -73,13 +73,24 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       correctAnswerIndex: 1,
     ),
     Question(
-      text: "1723-1727 жылдары қазақ халқына ауыр зардап әкелген оқиға қалай аталды?",
-      options: ["Аңырақай шайқасы", "Қалмақ қырғыны", "Орбұлақ шайқасы", "Ақтабан шұбырынды, Алқакөл сұлама"],
+      text:
+          "1723-1727 жылдары қазақ халқына ауыр зардап әкелген оқиға қалай аталды?",
+      options: [
+        "Аңырақай шайқасы",
+        "Қалмақ қырғыны",
+        "Орбұлақ шайқасы",
+        "Ақтабан шұбырынды, Алқакөл сұлама"
+      ],
       correctAnswerIndex: 2,
     ),
     Question(
       text: "1837-1847 жылдары болған көтеріліске кім жетекшілік етті?",
-      options: ["Сырым Датұлы", "Жанқожа Нұрмұхамедұлы", "Исатай Тайманұлы", "Кенесары Қасымұлы"],
+      options: [
+        "Сырым Датұлы",
+        "Жанқожа Нұрмұхамедұлы",
+        "Исатай Тайманұлы",
+        "Кенесары Қасымұлы"
+      ],
       correctAnswerIndex: 0,
     ),
     Question(
@@ -89,7 +100,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     ),
     Question(
       text: "1916 жылғы ұлт-азаттық көтерілістің негізгі себебі қандай болды?",
-      options: ["Дінге қысым жасалуы", "Ресей патшасының 19-43 жас аралығындағы ер адамдарды майданға қара жұмысқа алу туралы жарлығы", "Салықтың көбеюі", "Қазақ жерінің тартып алынуы"],
+      options: [
+        "Дінге қысым жасалуы",
+        "Ресей патшасының 19-43 жас аралығындағы ер адамдарды майданға қара жұмысқа алу туралы жарлығы",
+        "Салықтың көбеюі",
+        "Қазақ жерінің тартып алынуы"
+      ],
       correctAnswerIndex: 1,
     ),
   ];
@@ -98,7 +114,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     // Add 5 questions for the girl player
     Question(
       text: "1936 жылы Қазақстан қай одақтас республикаға айналды?",
-      options: ["Кеңестік Социалистік Республика", "Қазақ Кеңестік Социалистік Республикасы (Қазақ КСР)", "Қазақ АКСР", "Түркістан АКСР"],
+      options: [
+        "Кеңестік Социалистік Республика",
+        "Қазақ Кеңестік Социалистік Республикасы (Қазақ КСР)",
+        "Қазақ АКСР",
+        "Түркістан АКСР"
+      ],
       correctAnswerIndex: 2,
     ),
     Question(
@@ -108,16 +129,27 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     ),
     Question(
       text: "XX ғасырдың басында 'Алаш' партиясын кім басқарды?",
-      options: ["Міржақып Дулатұлы", "Мұстафа Шоқай", "Ахмет Байтұрсынұлы", "Әлихан Бөкейхан"],
+      options: [
+        "Міржақып Дулатұлы",
+        "Мұстафа Шоқай",
+        "Ахмет Байтұрсынұлы",
+        "Әлихан Бөкейхан"
+      ],
       correctAnswerIndex: 2,
     ),
     Question(
       text: "Қазақстан тәуелсіздігін қашан жариялады?",
-      options: ["1993 ж. 1 мамыр", "1990 ж. 25 қазан", "1986 ж. 16 желтоқсан", " 1991 ж. 16 желтоқсан"],
+      options: [
+        "1993 ж. 1 мамыр",
+        "1990 ж. 25 қазан",
+        "1986 ж. 16 желтоқсан",
+        " 1991 ж. 16 желтоқсан"
+      ],
       correctAnswerIndex: 3,
     ),
     Question(
-      text: "1993 жылы Қазақстан Республикасының тұңғыш Конституциясы қай күні қабылданды?",
+      text:
+          "1993 жылы Қазақстан Республикасының тұңғыш Конституциясы қай күні қабылданды?",
       options: ["28 қаңтар", "16 желтоқсан", "25 қазан", "30 тамыз"],
       correctAnswerIndex: 0,
     ),
@@ -197,7 +229,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             isBoyMoving = false;
 
             // Check if reached finish line
-            if (boyTargetIndex == boyCirclePositions.length && boyPlayer.y <= finishLineY + moveSpeed) {
+            if (boyTargetIndex == boyCirclePositions.length &&
+                boyPlayer.y <= finishLineY + moveSpeed) {
               _handleWinner('Ұл бала');
             }
             // Show question if reached a circle (not the finish line)
@@ -228,7 +261,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             isGirlMoving = false;
 
             // Check if reached finish line
-            if (girlTargetIndex == girlCirclePositions.length && girlPlayer.y <= finishLineY + moveSpeed) {
+            if (girlTargetIndex == girlCirclePositions.length &&
+                girlPlayer.y <= finishLineY + moveSpeed) {
               _handleWinner('Қыз бала');
             }
             // Show question if reached a circle (not the finish line)
@@ -266,7 +300,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     if (isQuizShown) return;
 
     // Check if we've run out of questions for this player
-    List<Question> questionList = player == 'boy' ? boyQuestions : girlQuestions;
+    List<Question> questionList =
+        player == 'boy' ? boyQuestions : girlQuestions;
     if (questionIndex >= questionList.length) return;
 
     setState(() {
@@ -281,9 +316,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     resultTimer?.cancel();
 
     // Get the correct list of questions
-    List<Question> questionList = currentPlayer == 'boy' ? boyQuestions : girlQuestions;
+    List<Question> questionList =
+        currentPlayer == 'boy' ? boyQuestions : girlQuestions;
 
-    bool correct = selectedAnswer == questionList[currentQuestionIndex].correctAnswerIndex;
+    bool correct =
+        selectedAnswer == questionList[currentQuestionIndex].correctAnswerIndex;
 
     // Mark this question as answered regardless of correctness
     String questionId = '$currentPlayer-$currentQuestionIndex';
@@ -383,66 +420,71 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
-        children: [
-          CustomPaint(
-            painter: RoadPainter(),
-            size: MediaQuery.of(context).size,
-          ),
-          if (boyImage != null && girlImage != null)
-            CustomPaint(
-              painter: PlayerPainter(
-                player: boyPlayer,
-                boyImage: boyImage!,
-                girlImage: girlImage!,
-              ),
-              size: MediaQuery.of(context).size,
-            ),
-          if (boyImage != null && girlImage != null)
-            CustomPaint(
-              painter: PlayerPainter(
-                player: girlPlayer,
-                boyImage: boyImage!,
-                girlImage: girlImage!,
-              ),
-              size: MediaQuery.of(context).size,
-            ),
-          Positioned(
-            left: 20,
-            bottom: 20,
-            child: ElevatedButton(
-              onPressed: isGameFinished ? null : _moveBoyToNextTarget,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: const Text("Move Boy", style: TextStyle(color: Colors.white)),
-            ),
-          ),
-          Positioned(
-            right: 20,
-            bottom: 20,
-            child: ElevatedButton(
-              onPressed: isGameFinished ? null : _moveGirlToNextTarget,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: const Text("Move Girl", style: TextStyle(color: Colors.white)),
-            ),
-          ),
-          // Quiz overlay
-          if (isQuizShown) _buildQuizOverlay(),
+              children: [
+                CustomPaint(
+                  painter: RoadPainter(),
+                  size: MediaQuery.of(context).size,
+                ),
+                if (boyImage != null && girlImage != null)
+                  CustomPaint(
+                    painter: PlayerPainter(
+                      player: boyPlayer,
+                      boyImage: boyImage!,
+                      girlImage: girlImage!,
+                    ),
+                    size: MediaQuery.of(context).size,
+                  ),
+                if (boyImage != null && girlImage != null)
+                  CustomPaint(
+                    painter: PlayerPainter(
+                      player: girlPlayer,
+                      boyImage: boyImage!,
+                      girlImage: girlImage!,
+                    ),
+                    size: MediaQuery.of(context).size,
+                  ),
+                Positioned(
+                  left: 20,
+                  bottom: 20,
+                  child: ElevatedButton(
+                    onPressed: isGameFinished ? null : _moveBoyToNextTarget,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                    ),
+                    child: const Text("Move Boy",
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  bottom: 20,
+                  child: ElevatedButton(
+                    onPressed: isGameFinished ? null : _moveGirlToNextTarget,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                    ),
+                    child: const Text("Move Girl",
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                // Quiz overlay
+                if (isQuizShown) _buildQuizOverlay(),
 
-          // Winner overlay
-          if (isGameFinished) _buildWinnerOverlay(),
-        ],
-      ),
+                // Winner overlay
+                if (isGameFinished) _buildWinnerOverlay(),
+              ],
+            ),
     );
   }
 
   Widget _buildQuizOverlay() {
     // Get the correct list of questions
-    List<Question> questionList = currentPlayer == 'boy' ? boyQuestions : girlQuestions;
+    List<Question> questionList =
+        currentPlayer == 'boy' ? boyQuestions : girlQuestions;
     final Question question = questionList[currentQuestionIndex];
 
     return Container(
@@ -599,7 +641,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 // Extension to capitalize first letter of a string
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }
 
@@ -632,19 +674,25 @@ class RoadPainter extends CustomPainter {
   void _drawStartFinishLines(Canvas canvas, Size size) {
     final double roadWidth = size.width * 0.8;
     final double roadLeft = (size.width - roadWidth) / 2;
-    final double lineHeight = 10;
+    const double lineHeight = 10;
 
     final Paint finishPaint1 = Paint()..color = Colors.white;
     final Paint finishPaint2 = Paint()..color = Colors.black;
 
     for (double i = 0; i < roadWidth; i += 20) {
-      canvas.drawRect(Rect.fromLTWH(roadLeft + i, 20, 10, lineHeight), finishPaint1);
-      canvas.drawRect(Rect.fromLTWH(roadLeft + i + 10, 20, 10, lineHeight), finishPaint2);
+      canvas.drawRect(
+          Rect.fromLTWH(roadLeft + i, 20, 10, lineHeight), finishPaint1);
+      canvas.drawRect(
+          Rect.fromLTWH(roadLeft + i + 10, 20, 10, lineHeight), finishPaint2);
     }
 
     for (double i = 0; i < roadWidth; i += 20) {
-      canvas.drawRect(Rect.fromLTWH(roadLeft + i, size.height - 40, 10, lineHeight), finishPaint1);
-      canvas.drawRect(Rect.fromLTWH(roadLeft + i + 10, size.height - 40, 10, lineHeight), finishPaint2);
+      canvas.drawRect(
+          Rect.fromLTWH(roadLeft + i, size.height - 40, 10, lineHeight),
+          finishPaint1);
+      canvas.drawRect(
+          Rect.fromLTWH(roadLeft + i + 10, size.height - 40, 10, lineHeight),
+          finishPaint2);
     }
   }
 
@@ -666,13 +714,15 @@ class RoadPainter extends CustomPainter {
     final double roadWidth = size.width * 0.8;
     final double roadLeft = (size.width - roadWidth) / 2;
     final Paint stopPaint = Paint()..color = Colors.red;
-    final double stopRadius = 40;
+    const double stopRadius = 40;
     final double stopSpacing = size.height / 7;
 
     for (var i = 1; i <= 5; i++) {
       double yPos = i * stopSpacing;
-      canvas.drawCircle(Offset(roadLeft + roadWidth * 0.33, yPos), stopRadius, stopPaint);
-      canvas.drawCircle(Offset(roadLeft + roadWidth * 0.67, yPos), stopRadius, stopPaint);
+      canvas.drawCircle(
+          Offset(roadLeft + roadWidth * 0.33, yPos), stopRadius, stopPaint);
+      canvas.drawCircle(
+          Offset(roadLeft + roadWidth * 0.67, yPos), stopRadius, stopPaint);
     }
   }
 
@@ -701,8 +751,10 @@ class PlayerPainter extends CustomPainter {
     final double newWidth = image.width * scaleFactor;
     final double newHeight = image.height * scaleFactor;
 
-    final Rect srcRect = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
-    final Rect dstRect = Rect.fromLTWH(player.x - newWidth / 2, player.y - newHeight / 2, newWidth, newHeight);
+    final Rect srcRect =
+        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
+    final Rect dstRect = Rect.fromLTWH(
+        player.x - newWidth / 2, player.y - newHeight / 2, newWidth, newHeight);
 
     canvas.drawImageRect(image, srcRect, dstRect, paint);
   }

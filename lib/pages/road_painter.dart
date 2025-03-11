@@ -29,7 +29,7 @@ class RoadPainter extends CustomPainter {
   void _drawStartFinishLines(Canvas canvas, Size size) {
     final double roadWidth = size.width * 0.8;
     final double roadLeft = (size.width - roadWidth) / 2;
-    final double lineHeight = 10;
+    const double lineHeight = 10;
 
     final Paint finishPaint1 = Paint()..color = Colors.white;
     final Paint finishPaint2 = Paint()..color = Colors.black;
@@ -63,7 +63,7 @@ class RoadPainter extends CustomPainter {
     final double roadWidth = size.width * 0.8;
     final double roadLeft = (size.width - roadWidth) / 2;
     final Paint stopPaint = Paint()..color = Colors.red;
-    final double stopRadius = 40;
+    const double stopRadius = 40;
     final double stopSpacing = size.height / 7;
 
     for (var i = 1; i <= 5; i++) {
