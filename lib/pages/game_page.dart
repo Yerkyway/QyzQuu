@@ -145,6 +145,65 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       ],
       correctAnswerIndex: 2,
     ),
+    Question(
+      text: "Қазақ хандығы қай жылы құрылды?",
+      options: ["1361 ж.", "1465 ж.", "1511 ж.", "1376 ж."],
+      correctAnswerIndex: 1,
+    ),
+    // География
+    Question(
+      text: "Қазақстанның ең биік нүктесі қайсы?",
+      options: ["Хан-Тәңірі", "Белуха", "Эльбрус", "Тянь-Шань"],
+      correctAnswerIndex: 0,
+    ),
+    // Математика
+    Question(
+      text: "3^3 + 2^3 = ?",
+      options: ["35", "27", "32", "35"],
+      correctAnswerIndex: 2,
+    ),
+    // Физика
+    Question(
+      text: "Электр тогын жақсы өткізетін металл қайсы?",
+      options: ["Мыс", "Алюминий", "Күміс", "Темір"],
+      correctAnswerIndex: 2,
+    ),
+    // Химия
+    Question(
+      text: "Судың химиялық формуласы қандай?",
+      options: ["H2O", "O2", "CO2", "H2SO4"],
+      correctAnswerIndex: 0,
+    ),
+    // Биология
+    Question(
+      text: "Адам ағзасындағы ең үлкен орган қандай?",
+      options: ["Жүрек", "Миға", "Тері", "Өкпе"],
+      correctAnswerIndex: 2,
+    ),
+    // Әдебиет
+    Question(
+      text: "Абай Құнанбаевтың шын есімі кім?",
+      options: ["Ибраһим", "Құнанбай", "Әбіш", "Семей"],
+      correctAnswerIndex: 0,
+    ),
+    // Астрономия
+    Question(
+      text: "Күн жүйесіндегі ең үлкен планета қайсы?",
+      options: ["Марс", "Шолпан", "Юпитер", "Сатурн"],
+      correctAnswerIndex: 2,
+    ),
+    // Информатика
+    Question(
+      text: "1 байт қанша биттен тұрады?",
+      options: ["8", "16", "32", "64"],
+      correctAnswerIndex: 0,
+    ),
+    // Қазақ тілі
+    Question(
+      text: "'Кітап' сөзінің синонимі қайсы?",
+      options: ["Қалам", "Әңгіме", "Том", "Құжат"],
+      correctAnswerIndex: 2,
+    ),
   ];
 
   List<Question> girlQuestions = [
@@ -221,6 +280,75 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     Question(
       text: "Абай Құнанбаевтың шын есімі кім?",
       options: ["Ибраһим", "Құнанбай", "Әбіш", "Семей"],
+      correctAnswerIndex: 0,
+    ),
+    Question(
+      text: "Қазақстан тәуелсіздігін қай жылы алды?",
+      options: ["1986 ж.", "1991 ж.", "1993 ж.", "1995 ж."],
+      correctAnswerIndex: 1,
+    ),
+    // География
+    Question(
+      text: "Каспий теңізі қандай су айдынына жатады?",
+      options: ["Өзен", "Көл", "Теңіз", "Мұхит"],
+      correctAnswerIndex: 1,
+    ),
+    // Математика
+    Question(
+      text: "√49 мәні қандай?",
+      options: ["5", "6", "7", "8"],
+      correctAnswerIndex: 2,
+    ),
+    // Физика
+    Question(
+      text: "Заттың ең кішкентай бөлшегі не?",
+      options: ["Молекула", "Атом", "Протон", "Нейтрон"],
+      correctAnswerIndex: 1,
+    ),
+    // Химия
+    Question(
+      text: "Алтынның химиялық белгісі қандай?",
+      options: ["Al", "Ag", "Fe", "Au"],
+      correctAnswerIndex: 3,
+    ),
+    // Биология
+    Question(
+      text: "Қан тобының түрлері қанша?",
+      options: ["2", "3", "4", "5"],
+      correctAnswerIndex: 2,
+    ),
+    // Әдебиет
+    Question(
+      text: "Қазақтың тұңғыш романы қалай аталады?",
+      options: [
+        "Абай жолы",
+        "Қараш-Қараш оқиғасы",
+        "Бақытсыз Жамал",
+        "Көшпенділер"
+      ],
+      correctAnswerIndex: 2,
+    ),
+    // Астрономия
+    Question(
+      text: "Айдың Жерді толық айналып шығу уақыты қандай?",
+      options: ["24 сағат", "7 күн", "28 күн", "365 күн"],
+      correctAnswerIndex: 2,
+    ),
+    // Информатика
+    Question(
+      text: "Компьютердің негізгі құрылғылары қандай?",
+      options: [
+        "Пернетақта, монитор, тышқан",
+        "Процессор, жедел жады, қатқыл диск",
+        "Принтер, сканер, микрофон",
+        "Бағдарламалар, операциялық жүйе, файлдар"
+      ],
+      correctAnswerIndex: 1,
+    ),
+    // Қазақ тілі
+    Question(
+      text: "'Жүзеге асыру' тіркесінің синонимін таңдаңыз.",
+      options: ["Орындау", "Жою", "Алу", "Көшіру"],
       correctAnswerIndex: 0,
     ),
   ];
@@ -411,8 +539,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   void _startCountdown() {
     setState(() {
-      showCountdown = false;
-      countdownValue = 10000;
+      showCountdown = true;
+      countdownValue = 5;
     });
 
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -532,7 +660,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 20),
         Text(
-          isCorrect ? "Correct!" : (isTimeout ? "Not Answered!" : "Incorrect!"),
+          isCorrect
+              ? "Дұрыс!"
+              : (isTimeout ? "Жауап берілмеді!" : "Дұрыс емес!"),
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -542,8 +672,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         const SizedBox(height: 20),
         Text(
           isCorrect
-              ? "Moving to the next stop in 3 seconds..."
-              : "Try again! Press the move button to continue.",
+              ? "Келесі аялдамаға 3 секундтан кейін қозғаламыз..."
+              : "Қайтадан көріңіз! ",
           style: const TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),
@@ -556,7 +686,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          "Stop ${currentQuestionIndex + 1} - ${currentPlayer.capitalize()}",
+          currentPlayer == 'boy' ? 'Ұл бала' : 'Қыз бала',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -571,7 +701,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 20),
         Text(
-          'Time left: ${questionTimeLeft}s',
+          'Қалған уақыт: ${questionTimeLeft}s',
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
         const SizedBox(height: 20),
@@ -627,7 +757,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 20),
               Text(
-                "Congratulations!",
+                "Құттықтаймыз!",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -635,14 +765,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                "$winner wins the race!",
+              const Text(
+                "Жеңімпаз жарыста жеңіске жетті",
                 style: const TextStyle(fontSize: 22),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               const Text(
-                "Returning to main menu in 5 seconds...",
+                "5 секундтан кейін басты мәзірге ораламыз...",
                 style: TextStyle(fontSize: 16, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -663,7 +793,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Game Starting in',
+              'Ойын басталып жатыр',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -696,13 +826,23 @@ class RoadPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.translate(0, -scrollOffset);
     final Paint grassPaint = Paint()..color = Colors.green.shade600;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, roadLength), grassPaint);
+    canvas.drawRect(
+      Rect.fromLTWH(
+          0,
+          -size.height * 5, // Extend 5 screen heights above
+          size.width,
+          size.height * 15 // Cover 15 total screen heights
+          ),
+      grassPaint,
+    );
 
     final double roadWidth = size.width * 0.6;
     final double roadLeft = (size.width - roadWidth) / 2;
     final Paint roadPaint = Paint()..color = const Color(0xFF916F4A);
     canvas.drawRect(
-        Rect.fromLTWH(roadLeft, 0, roadWidth, roadLength), roadPaint);
+      Rect.fromLTWH(roadLeft, 0, roadWidth, roadLength),
+      roadPaint,
+    );
 
     // Lane markings
     final Paint dashPaint = Paint()
