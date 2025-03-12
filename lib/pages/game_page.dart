@@ -43,8 +43,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   double finishLineY = 0;
 
   // Track current target positions
-  int boyTargetIndex = 0;
-  int girlTargetIndex = 0;
+  int boyTargetIndex = -1;
+  int girlTargetIndex = -1;
 
   // Track if player is currently moving
   bool isBoyMoving = false;
@@ -121,6 +121,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       ],
       correctAnswerIndex: 1,
     ),
+    Question(
+      text: "Қазақстан Республикасының алғашқы президенті кім?",
+      options: [
+        "Мен",
+        "Қанат Қазыбекұлы",
+        "Қанат Қазыбекұлы",
+        "Қанат Қазыбекұлы"
+      ],
+      correctAnswerIndex: 0,
+    ),
   ];
 
   List<Question> girlQuestions = [
@@ -164,6 +174,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       text:
           "1993 жылы Қазақстан Республикасының тұңғыш Конституциясы қай күні қабылданды?",
       options: ["28 қаңтар", "16 желтоқсан", "25 қазан", "30 тамыз"],
+      correctAnswerIndex: 0,
+    ),
+    Question(
+      text: "Қазақстан Республикасының алғашқы президенті кім?",
+      options: [
+        "Мен",
+        "Қанат Қазыбекұлы",
+        "Қанат Қазыбекұлы",
+        "Қанат Қазыбекұлы"
+      ],
       correctAnswerIndex: 0,
     ),
   ];
@@ -373,10 +393,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         if (correct) {
           // If answer was correct, move the current player forward
           if (currentPlayer == 'boy') {
-            boyTargetIndex = 0; // Ensure starting at the first stop
+            boyTargetIndex++; // Increment to move to the next stop
             isBoyMoving = true;
           } else {
-            girlTargetIndex = 0; // Ensure starting at the first stop
+            girlTargetIndex++; // Increment to move to the next stop
             isGirlMoving = true;
           }
 
@@ -385,18 +405,18 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             // Switch to the other player's turn
             currentPlayer = currentPlayer == 'boy' ? 'girl' : 'boy';
             if (currentPlayer == 'boy') {
-              _showQuestionDialog('boy', boyTargetIndex);
+              _showQuestionDialog('boy', boyTargetIndex + 1);
             } else {
-              _showQuestionDialog('girl', girlTargetIndex);
+              _showQuestionDialog('girl', girlTargetIndex + 1);
             }
           });
         } else {
           // If answer was incorrect, immediately show question for other player
           currentPlayer = currentPlayer == 'boy' ? 'girl' : 'boy';
           if (currentPlayer == 'boy') {
-            _showQuestionDialog('boy', boyTargetIndex);
+            _showQuestionDialog('boy', boyTargetIndex + 1);
           } else {
-            _showQuestionDialog('girl', girlTargetIndex);
+            _showQuestionDialog('girl', girlTargetIndex + 1);
           }
         }
       });
