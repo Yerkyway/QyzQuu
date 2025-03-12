@@ -32,6 +32,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   bool isLoading = true;
   late Ticker _ticker;
 
+  // Add countdown variables
+  bool showCountdown = true;
+  int countdownValue = 3;
+  Timer? countdownTimer;
+
   // Add lists to store circle positions
   List<double> boyCirclePositions = [];
   List<double> girlCirclePositions = [];
@@ -47,8 +52,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   // Track if quiz is shown
   bool isQuizShown = false;
-  String currentPlayer = ''; // To know which player is taking the quiz
-  int currentQuestionIndex = -1;
+  String currentPlayer = 'girl';
+  int currentQuestionIndex = 0;
   bool showResult = false;
   bool isCorrect = false;
   Timer? resultTimer;
@@ -63,6 +68,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   // Movement speed
   final double moveSpeed = 5.0;
+
+  // Add a timer for each question
+  Timer? questionTimer;
+
+  int questionTimeLeft = 10; // Track time left for the question
+
+  bool isTimeout =
+      false; // Track if the question was not answered due to timeout
 
   // Define separate question lists for boy and girl
   List<Question> boyQuestions = [
@@ -79,7 +92,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         "Аңырақай шайқасы",
         "Қалмақ қырғыны",
         "Орбұлақ шайқасы",
-        "Ақтабан шұбырынды, Алқакөл сұлама"
+        "Ақтабан шұбырынды, Алқакөл сұлама",
       ],
       correctAnswerIndex: 2,
     ),
@@ -89,7 +102,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         "Сырым Датұлы",
         "Жанқожа Нұрмұхамедұлы",
         "Исатай Тайманұлы",
-        "Кенесары Қасымұлы"
+        "Кенесары Қасымұлы",
       ],
       correctAnswerIndex: 0,
     ),
@@ -104,7 +117,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         "Дінге қысым жасалуы",
         "Ресей патшасының 19-43 жас аралығындағы ер адамдарды майданға қара жұмысқа алу туралы жарлығы",
         "Салықтың көбеюі",
-        "Қазақ жерінің тартып алынуы"
+        "Қазақ жерінің тартып алынуы",
       ],
       correctAnswerIndex: 1,
     ),
@@ -118,7 +131,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         "Кеңестік Социалистік Республика",
         "Қазақ Кеңестік Социалистік Республикасы (Қазақ КСР)",
         "Қазақ АКСР",
-        "Түркістан АКСР"
+        "Түркістан АКСР",
       ],
       correctAnswerIndex: 2,
     ),
@@ -133,7 +146,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         "Міржақып Дулатұлы",
         "Мұстафа Шоқай",
         "Ахмет Байтұрсынұлы",
-        "Әлихан Бөкейхан"
+        "Әлихан Бөкейхан",
       ],
       correctAnswerIndex: 2,
     ),
@@ -143,7 +156,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         "1993 ж. 1 мамыр",
         "1990 ж. 25 қазан",
         "1986 ж. 16 желтоқсан",
-        " 1991 ж. 16 желтоқсан"
+        " 1991 ж. 16 желтоқсан",
       ],
       correctAnswerIndex: 3,
     ),
@@ -160,16 +173,18 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     super.initState();
     _loadImages();
     _ticker = createTicker(_onTick)..start();
+    // Start countdown when page loads
+    _startCountdown();
   }
 
   Future<void> _loadImages() async {
-    final boyData = await rootBundle.load('assets/boy_rider.png');
+    final boyData = await rootBundle.load('assets/boy.png');
     final boyCodec = await ui.instantiateImageCodec(
       boyData.buffer.asUint8List(),
     );
     boyImage = (await boyCodec.getNextFrame()).image;
 
-    final girlData = await rootBundle.load('assets/girl_rider.png');
+    final girlData = await rootBundle.load('assets/girl.png');
     final girlCodec = await ui.instantiateImageCodec(
       girlData.buffer.asUint8List(),
     );
@@ -182,13 +197,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     // Initialize player positions at starting line
     boyPlayer = Player(
       type: 'boy',
-      x: roadLeft + roadWidth * 0.2,
+      x: roadLeft + roadWidth * 0.33,
       y: size.height - 200, // Just above finish line
     );
 
     girlPlayer = Player(
       type: 'girl',
-      x: roadLeft + roadWidth * 0.8,
+      x: roadLeft + roadWidth * 0.85,
       y: size.height - 200, // Just above finish line
     );
 
@@ -296,8 +311,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   void _showQuestionDialog(String player, int questionIndex) {
-    // Don't show question if quiz is already showing
-    if (isQuizShown) return;
+    // Don't show question if quiz is already showing or if game is finished
+    if (isQuizShown || isGameFinished) return;
 
     // Check if we've run out of questions for this player
     List<Question> questionList =
@@ -308,18 +323,36 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       isQuizShown = true;
       currentPlayer = player;
       currentQuestionIndex = questionIndex;
+      questionTimeLeft = 10; // Reset the timer
+    });
+
+    // Start a 10-second timer for the question
+    questionTimer?.cancel(); // Cancel any existing timer
+    questionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (questionTimeLeft > 1) {
+          questionTimeLeft--;
+        } else {
+          timer.cancel();
+          _checkAnswer(-1); // Pass -1 to indicate timeout
+        }
+      });
     });
   }
 
   void _checkAnswer(int selectedAnswer) {
-    // Clear any existing timer
+    // Clear any existing timers
     resultTimer?.cancel();
+    questionTimer?.cancel(); // Cancel the question timer
+
+    // Determine if the answer was due to a timeout
+    isTimeout = selectedAnswer == -1;
 
     // Get the correct list of questions
     List<Question> questionList =
         currentPlayer == 'boy' ? boyQuestions : girlQuestions;
 
-    bool correct =
+    bool correct = !isTimeout &&
         selectedAnswer == questionList[currentQuestionIndex].correctAnswerIndex;
 
     // Mark this question as answered regardless of correctness
@@ -331,84 +364,70 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       isCorrect = correct;
     });
 
-    // Set timer to close the dialog after showing the result
-    resultTimer = Timer(Duration(seconds: correct ? 3 : 2), () {
+    // Set timer to handle the next action after showing the result
+    resultTimer = Timer(const Duration(seconds: 2), () {
       setState(() {
-        if (correct) {
-          // Increment the target index if correct answer
-          if (currentPlayer == 'boy') {
-            boyTargetIndex++;
-            // Move to next target if correct
-            if (boyTargetIndex < boyCirclePositions.length) {
-              isBoyMoving = true;
-            } else if (boyTargetIndex == boyCirclePositions.length) {
-              // Move to finish line
-              isBoyMoving = true;
-            }
-          } else {
-            girlTargetIndex++;
-            // Move to next target if correct
-            if (girlTargetIndex < girlCirclePositions.length) {
-              isGirlMoving = true;
-            } else if (girlTargetIndex == girlCirclePositions.length) {
-              // Move to finish line
-              isGirlMoving = true;
-            }
-          }
-        }
-
         isQuizShown = false;
         showResult = false;
+
+        if (correct) {
+          // If answer was correct, move the current player forward
+          if (currentPlayer == 'boy') {
+            boyTargetIndex = 0; // Ensure starting at the first stop
+            isBoyMoving = true;
+          } else {
+            girlTargetIndex = 0; // Ensure starting at the first stop
+            isGirlMoving = true;
+          }
+
+          // Wait for movement to complete before showing next question
+          Timer(const Duration(milliseconds: 500), () {
+            // Switch to the other player's turn
+            currentPlayer = currentPlayer == 'boy' ? 'girl' : 'boy';
+            if (currentPlayer == 'boy') {
+              _showQuestionDialog('boy', boyTargetIndex);
+            } else {
+              _showQuestionDialog('girl', girlTargetIndex);
+            }
+          });
+        } else {
+          // If answer was incorrect, immediately show question for other player
+          currentPlayer = currentPlayer == 'boy' ? 'girl' : 'boy';
+          if (currentPlayer == 'boy') {
+            _showQuestionDialog('boy', boyTargetIndex);
+          } else {
+            _showQuestionDialog('girl', girlTargetIndex);
+          }
+        }
       });
     });
   }
 
-  void _moveBoyToNextTarget() {
-    if (!isBoyMoving && !isQuizShown) {
-      setState(() {
-        // If we're at a position that we've already answered incorrectly,
-        // move to the next position
-        if (boyTargetIndex < boyCirclePositions.length) {
-          String questionId = 'boy-$boyTargetIndex';
-          if (answeredQuestions.contains(questionId)) {
-            // Skip this position since we've already answered (incorrectly)
-            boyTargetIndex++;
-          }
-        }
+  void _startCountdown() {
+    setState(() {
+      showCountdown = true;
+      countdownValue = 3;
+    });
 
-        // Only move if we haven't reached the finish line yet
-        if (boyTargetIndex <= boyCirclePositions.length) {
-          isBoyMoving = true;
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (countdownValue > 1) {
+          countdownValue--;
+        } else {
+          showCountdown = false;
+          timer.cancel();
+          // Show girl's question immediately after countdown
+          _showQuestionDialog('girl', 0);
         }
       });
-    }
-  }
-
-  void _moveGirlToNextTarget() {
-    if (!isGirlMoving && !isQuizShown) {
-      setState(() {
-        // If we're at a position that we've already answered incorrectly,
-        // move to the next position
-        if (girlTargetIndex < girlCirclePositions.length) {
-          String questionId = 'girl-$girlTargetIndex';
-          if (answeredQuestions.contains(questionId)) {
-            // Skip this position since we've already answered (incorrectly)
-            girlTargetIndex++;
-          }
-        }
-
-        // Only move if we haven't reached the finish line yet
-        if (girlTargetIndex <= girlCirclePositions.length) {
-          isGirlMoving = true;
-        }
-      });
-    }
+    });
   }
 
   @override
   void dispose() {
     resultTimer?.cancel();
     redirectTimer?.cancel();
+    countdownTimer?.cancel();
     _ticker.dispose();
     super.dispose();
   }
@@ -417,67 +436,103 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Game Screen')),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                CustomPaint(
-                  painter: RoadPainter(),
-                  size: MediaQuery.of(context).size,
-                ),
-                if (boyImage != null && girlImage != null)
-                  CustomPaint(
-                    painter: PlayerPainter(
-                      player: boyPlayer,
-                      boyImage: boyImage!,
-                      girlImage: girlImage!,
+      body: Stack(
+        children: [
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    CustomPaint(
+                      painter: RoadPainter(),
+                      size: MediaQuery.of(context).size,
                     ),
-                    size: MediaQuery.of(context).size,
-                  ),
-                if (boyImage != null && girlImage != null)
-                  CustomPaint(
-                    painter: PlayerPainter(
-                      player: girlPlayer,
-                      boyImage: boyImage!,
-                      girlImage: girlImage!,
-                    ),
-                    size: MediaQuery.of(context).size,
-                  ),
-                Positioned(
-                  left: 20,
-                  bottom: 20,
-                  child: ElevatedButton(
-                    onPressed: isGameFinished ? null : _moveBoyToNextTarget,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                    ),
-                    child: const Text("Move Boy",
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-                Positioned(
-                  right: 20,
-                  bottom: 20,
-                  child: ElevatedButton(
-                    onPressed: isGameFinished ? null : _moveGirlToNextTarget,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                    ),
-                    child: const Text("Move Girl",
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-                // Quiz overlay
-                if (isQuizShown) _buildQuizOverlay(),
+                    if (boyImage != null && girlImage != null)
+                      CustomPaint(
+                        painter: PlayerPainter(
+                          player: boyPlayer,
+                          boyImage: boyImage!,
+                          girlImage: girlImage!,
+                        ),
+                        size: MediaQuery.of(context).size,
+                      ),
+                    if (boyImage != null && girlImage != null)
+                      CustomPaint(
+                        painter: PlayerPainter(
+                          player: girlPlayer,
+                          boyImage: boyImage!,
+                          girlImage: girlImage!,
+                        ),
+                        size: MediaQuery.of(context).size,
+                      ),
+                    // Positioned(
+                    //   left: 20,
+                    //   bottom: 20,
+                    //   child: ElevatedButton(
+                    //     onPressed: isGameFinished ? null : _moveBoyToNextTarget,
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.blue,
+                    //       padding: const EdgeInsets.symmetric(
+                    //           horizontal: 20, vertical: 10),
+                    //     ),
+                    //     child: const Text("Move Boy",
+                    //         style: TextStyle(color: Colors.white)),
+                    //   ),
+                    // ),
+                    // Positioned(
+                    //   right: 20,
+                    //   bottom: 20,
+                    //   child: ElevatedButton(
+                    //     onPressed: isGameFinished ? null : _moveGirlToNextTarget,
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.red,
+                    //       padding: const EdgeInsets.symmetric(
+                    //           horizontal: 20, vertical: 10),
+                    //     ),
+                    //     child: const Text("Move Girl",
+                    //         style: TextStyle(color: Colors.white)),
+                    //   ),
+                    // ),
+                    // Quiz overlay
+                    if (isQuizShown) _buildQuizOverlay(),
 
-                // Winner overlay
-                if (isGameFinished) _buildWinnerOverlay(),
-              ],
-            ),
+                    // Winner overlay
+                    if (isGameFinished) _buildWinnerOverlay(),
+
+                    // Add countdown overlay
+                    if (showCountdown)
+                      Container(
+                        color: Colors.black54,
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Game Starting in',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                countdownValue.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 72,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+        ],
+      ),
     );
   }
 
@@ -522,11 +577,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         const SizedBox(height: 10),
         Text(
           question.text,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'Time left: ${questionTimeLeft}s',
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
         const SizedBox(height: 20),
         ...List.generate(question.options.length, (index) {
@@ -561,7 +618,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 20),
         Text(
-          isCorrect ? "Correct!" : "Incorrect!",
+          isCorrect ? "Correct!" : (isTimeout ? "Not Answered!" : "Incorrect!"),
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -661,9 +718,10 @@ class RoadPainter extends CustomPainter {
   }
 
   void _drawRoad(Canvas canvas, Size size) {
-    final double roadWidth = size.width * 0.8;
+    final double roadWidth = size.width * 0.6;
     final double roadLeft = (size.width - roadWidth) / 2;
-    final Paint roadPaint = Paint()..color = Colors.grey.shade800;
+    final Paint roadPaint = Paint()
+      ..color = const ui.Color.fromARGB(255, 145, 115, 74);
 
     canvas.drawRect(
       Rect.fromLTWH(roadLeft, 0, roadWidth, size.height),
@@ -672,7 +730,7 @@ class RoadPainter extends CustomPainter {
   }
 
   void _drawStartFinishLines(Canvas canvas, Size size) {
-    final double roadWidth = size.width * 0.8;
+    final double roadWidth = size.width * 0.6;
     final double roadLeft = (size.width - roadWidth) / 2;
     const double lineHeight = 10;
 
@@ -681,19 +739,23 @@ class RoadPainter extends CustomPainter {
 
     for (double i = 0; i < roadWidth; i += 20) {
       canvas.drawRect(
-          Rect.fromLTWH(roadLeft + i, 20, 10, lineHeight), finishPaint1);
+        Rect.fromLTWH(roadLeft + i, 20, 10, lineHeight),
+        finishPaint1,
+      );
       canvas.drawRect(
-          Rect.fromLTWH(roadLeft + i + 10, 20, 10, lineHeight), finishPaint2);
+        Rect.fromLTWH(roadLeft + i + 10, 20, 10, lineHeight),
+        finishPaint2,
+      );
     }
 
-    for (double i = 0; i < roadWidth; i += 20) {
-      canvas.drawRect(
-          Rect.fromLTWH(roadLeft + i, size.height - 40, 10, lineHeight),
-          finishPaint1);
-      canvas.drawRect(
-          Rect.fromLTWH(roadLeft + i + 10, size.height - 40, 10, lineHeight),
-          finishPaint2);
-    }
+    // for (double i = 0; i < roadWidth; i += 20) {
+    //   canvas.drawRect(
+    //       Rect.fromLTWH(roadLeft + i, size.height - 40, 10, lineHeight),
+    //       finishPaint1);
+    //   canvas.drawRect(
+    //       Rect.fromLTWH(roadLeft + i + 10, size.height - 40, 10, lineHeight),
+    //       finishPaint2);
+    // }
   }
 
   void _drawLaneMarkings(Canvas canvas, Size size) {
@@ -713,14 +775,18 @@ class RoadPainter extends CustomPainter {
   void _drawStops(Canvas canvas, Size size) {
     final double roadWidth = size.width * 0.8;
     final double roadLeft = (size.width - roadWidth) / 2;
-    final Paint stopPaint = Paint()..color = Colors.red;
+    final Paint stopPaint = Paint()
+      ..color = const ui.Color.fromARGB(255, 240, 60, 24);
     const double stopRadius = 40;
     final double stopSpacing = size.height / 7;
 
     for (var i = 1; i <= 5; i++) {
       double yPos = i * stopSpacing;
       canvas.drawCircle(
-          Offset(roadLeft + roadWidth * 0.5, yPos), stopRadius, stopPaint);
+        Offset(roadLeft + roadWidth * 0.5, yPos),
+        stopRadius,
+        stopPaint,
+      );
     }
   }
 
@@ -749,10 +815,18 @@ class PlayerPainter extends CustomPainter {
     final double newWidth = image.width * scaleFactor;
     final double newHeight = image.height * scaleFactor;
 
-    final Rect srcRect =
-        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
+    final Rect srcRect = Rect.fromLTWH(
+      0,
+      0,
+      image.width.toDouble(),
+      image.height.toDouble(),
+    );
     final Rect dstRect = Rect.fromLTWH(
-        player.x - newWidth / 2, player.y - newHeight / 2, newWidth, newHeight);
+      player.x - newWidth / 2,
+      player.y - newHeight / 2,
+      newWidth,
+      newHeight,
+    );
 
     canvas.drawImageRect(image, srcRect, dstRect, paint);
   }
