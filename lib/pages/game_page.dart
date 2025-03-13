@@ -410,6 +410,21 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           (boyPlayer.y + girlPlayer.y) / 2 - visibleAreaHeight / 2;
       scrollOffset = scrollOffset * 0.9 + targetScroll * 0.1;
 
+      double interpolationFactor = 0.9; // Smooth following
+      if (isQuizShown) {
+        // Center the current player when quiz is shown
+        Player activePlayer = currentPlayer == 'boy' ? boyPlayer : girlPlayer;
+        targetScroll = activePlayer.y - visibleAreaHeight / 2;
+        interpolationFactor = 0.1; // Snap faster to the target
+      } else {
+        // Follow both players normally
+        targetScroll = (boyPlayer.y + girlPlayer.y) / 2 - visibleAreaHeight / 2;
+        interpolationFactor = 0.9; // Smooth following
+      }
+
+      scrollOffset = scrollOffset * interpolationFactor +
+          targetScroll * (1 - interpolationFactor);
+
       setState(() {
         _updatePlayerPosition(
             boyPlayer, boyCirclePositions, isBoyMoving, boyTargetIndex, 'boy');
@@ -517,7 +532,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             isGirlMoving = true;
           }
 
-          Timer(const Duration(milliseconds: 500), () {
+          Timer(const Duration(milliseconds: 2000), () {
             currentPlayer = currentPlayer == 'boy' ? 'girl' : 'boy';
             if (currentPlayer == 'boy') {
               _showQuestionDialog('boy', boyTargetIndex + 1);
